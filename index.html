@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Iloveyou</title>
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #ffe6e6, #fff0f5);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: background 2s ease; /* For potential color transitions */
+    }
+    
+    /* Sparkle effect overlay */
+    .sparkles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.8) 20%, transparent 20%);
+      background-size: 5px 5px;
+      animation: sparkles 2s linear infinite;
+    }
+    @keyframes sparkles {
+      from { background-position: 0 0; }
+      to { background-position: 5px 5px; }
+    }
+    
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      margin: 0 auto;
+      max-width: 90%;
+      transition: opacity 1s ease; /* We'll fade this in/out */
+    }
+    
+    h1 {
+      font-size: 2.8rem;
+      color: #ff3366;
+      margin-bottom: 0.5rem;
+    }
+    
+    p {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 2rem;
+    }
+    
+    .heart {
+      font-size: 2rem;
+      animation: beat 1s infinite;
+      display: inline-block;
+      vertical-align: middle; /* Added for proper alignment */
+    }
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+    }
+    
+    .button {
+      padding: 0.8rem 1.5rem;
+      background-color: #ff3366;
+      border: none;
+      border-radius: 30px;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      outline: none;
+    }
+    .button:hover {
+      background-color: #e62e5c;
+    }
+    
+    /* Buttons container to display Yes and No side by side */
+    .buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    /* No button initially in normal flow */
+    #noButton {
+      transition: left 0.3s ease, top 0.3s ease;
+      z-index: 2;
+    }
+    
+    /* Heart effect (burst) */
+    .heartEffect {
+      position: fixed;
+      font-size: 2rem;
+      pointer-events: none;
+      opacity: 1;
+    }
+    
+    /* Falling hearts animation */
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    .fallingHeart {
+      position: fixed;
+      top: -50px;
+      pointer-events: none;
+      animation: fall 5s linear forwards;
+    }
+    
+    /* Fade-out helper class */
+    .fade-out {
+      opacity: 0 !important;
+    }
+    
+    /* For a special swirling background */
+    .specialBackground {
+      background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4);
+      background-size: 200% 200%;
+      animation: swirl 8s ease-in-out infinite;
+    }
+    @keyframes swirl {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    /* New heart color classes */
+    .heart-white { 
+      color: #ffffff; 
+      text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
+    .heart-pink { 
+      color: #ffc0cb; 
+      text-shadow: 0 0 5px rgba(255,192,203,0.5);
+    }
+    
+    /* Override heart styles to remove red color */
+    .heart {
+      /* color: red; */ /* Removed red color */
+      font-size: 2rem;
+      animation: beat 1s infinite;
+      display: inline-block;
+      vertical-align: middle; /* Added for proper alignment */
+    }
+    .heartEffect {
+      /* color: #ff3366; */ /* Removed red color */
+      position: fixed;
+      font-size: 2rem;
+      pointer-events: none;
+      opacity: 1;
+    }
+    
+    /* New media container styling */
+    #mediaContainer {
+      margin-top: 2rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="sparkles"></div>
+  
+  <div class="container" id="mainContainer">
+    <h1>
+      HAPPY VALENTINE'S DAY MOMMY <span class="heart heart-pink">🩷</span>
+    </h1>
+    <p>W-would you be the ts to my pmo?</p>
+    <div class="buttons">
+      <button class="button" onclick="sayYes(event)">Yes, I will!</button>
+      <button id="noButton" class="button">No</button>
+    </div>
+    <!-- New media container for GIFs/Images -->
+    <div id="mediaContainer">
+      <!-- Placeholder for gifs/images -->
+      <img src="https://i.redd.it/pnk3vwezw8sc1.jpeg" width="256" height="341.33">
+    </div>
+  </div>
+  
+  <script>
+    const container = document.getElementById('mainContainer');
+    const noButton = document.getElementById('noButton');
+    let fallingHeartsInterval;
+    let transitionTimeout; // Added fallback timer variable
+    
+    // New helper to pick a random heart emoji
+    function getRandomHeartEmoji() {
+      return Math.random() < 0.5 ? "🤍" : "🩷";
+    }
+    
+    /* =====================
+       NO BUTTON LOGIC
+    ===================== */
+    
+    // 1) We keep the No button in normal flow next to the Yes button.
+    // 2) When hovered, we measure its position, fix it, then move it away.
+    
+    if (noButton) {
+      noButton.addEventListener("mouseenter", (e) => {
+        // If it's still static, fix its position
+        if (noButton.style.position !== 'fixed') {
+          const rect = noButton.getBoundingClientRect();
+          noButton.style.position = 'fixed';
+          noButton.style.left = rect.left + 'px';
+          noButton.style.top = rect.top + 'px';
+        }
+        moveNoButton(e);
+      });
+    }
+    
+    function moveNoButton(e) {
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const buttonRect = noButton.getBoundingClientRect();
+      const buttonWidth = buttonRect.width;
+      const buttonHeight = buttonRect.height;
+      
+      let newLeft, newTop;
+      const cursorX = e.clientX;
+      const cursorY = e.clientY;
+      let distance;
+      
+      // Ensure the new position is at least 150px away from the cursor
+      do {
+        newLeft = Math.random() * (windowWidth - buttonWidth);
+        newTop = Math.random() * (windowHeight - buttonHeight);
+        const buttonCenterX = newLeft + buttonWidth / 2;
+        const buttonCenterY = newTop + buttonHeight / 2;
+        const dx = buttonCenterX - cursorX;
+        const dy = buttonCenterY - cursorY;
+        distance = Math.sqrt(dx * dx + dy * dy);
+      } while (distance < 150);
+      
+      noButton.style.left = newLeft + 'px';
+      noButton.style.top = newTop + 'px';
+    }
+    
+    /* =====================
+       YES BUTTON LOGIC
+    ===================== */
+    
+    function sayYes(event) {
+      // 1) Remove the No button
+      if (noButton) noButton.remove();
+      
+      // 2) Spawn a few burst hearts at the click
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      for (let i = 0; i < 5; i++) {
+        spawnBurstHeart(clickX, clickY);
+      }
+      
+      // 3) Fade out the current container
+      container.classList.add('fade-out');
+      // Fallback: call handleTransitionEnd after 1100ms if transitionend doesn't fire
+      transitionTimeout = setTimeout(handleTransitionEnd, 1100);
+      // Listen for transitionend and filter for opacity
+      container.addEventListener('transitionend', (e) => {
+        if (e.propertyName !== 'opacity') return;
+        handleTransitionEnd(e);
+      }, { once: true });
+    }
+    
+    function handleTransitionEnd(e) {
+      // Ensure this executes only after opacity transition completes.
+      if (e && e.propertyName && e.propertyName !== 'opacity') return;
+      if (transitionTimeout) {
+        clearTimeout(transitionTimeout);
+        transitionTimeout = null;
+      }
+      // a) Make the background swirl with a fancy gradient
+      document.body.classList.add('specialBackground');
+      
+      // b) Update the container's inner HTML to a new message
+      container.innerHTML = `
+        <h1>YAYYY (⸝⸝> ω <⸝⸝) <span class="heart heart-pink">🤍</span></h1>
+        <p>I love you more than anything, my perfect baby</p>
+        <img src="https://media1.tenor.com/m/LyiynwDA18oAAAAC/hai.gif">
+      `;
+      
+      // c) Remove the fade-out class so we can fade in
+      container.classList.remove('fade-out');
+      
+      // d) Start the falling hearts
+      startFallingHearts();
+    }
+    
+    /* =====================
+       BURST HEARTS
+    ===================== */
+    
+    // Utility to pick a random heart color class
+    function getRandomHeartClass() {
+      return Math.random() < 0.5 ? 'heart-white' : 'heart-pink';
+    }
+    
+    function spawnBurstHeart(x, y) {
+      const heart = document.createElement("div");
+      heart.className = "heartEffect " + getRandomHeartClass();
+      heart.style.left = (x - 10) + "px";
+      heart.style.top = (y - 10) + "px";
+      // Use the random heart emoji instead of red heart
+      heart.textContent = getRandomHeartEmoji();
+      document.body.appendChild(heart);
+      
+      // Random offset for subtle movement
+      const offsetX = (Math.random() * 100 - 50);
+      const offsetY = (Math.random() * -100 - 100);
+      const rotation = Math.random() * 360;
+      
+      // Apply transform with animation
+      requestAnimationFrame(() => {
+        heart.style.transition = "all 1s ease-out";
+        heart.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${rotation}deg) scale(0)`;
+        heart.style.opacity = "0";
+      });
+
+      // Cleanup after animation
+      heart.addEventListener('transitionend', () => {
+        document.body.removeChild(heart);
+      }, { once: true });
+    }
+    
+    /* =====================
+       CONTINUOUS FALLING HEARTS
+    ===================== */
+    
+    function startFallingHearts() {
+      fallingHeartsInterval = setInterval(spawnFallingHeart, 200);
+    }
+    
+    function spawnFallingHeart() {
+      const heart = document.createElement("div");
+      heart.className = "fallingHeart " + getRandomHeartClass();
+      // Use the random heart emoji instead of red heart
+      heart.textContent = getRandomHeartEmoji();
+      heart.style.left = Math.random() * window.innerWidth + "px";
+      heart.style.fontSize = (Math.random() * 1 + 1.5) + "rem"; // random size: 1.5rem - 2.5rem
+      document.body.appendChild(heart);
+      
+      // Remove the heart after its falling animation
+      setTimeout(() => {
+        heart.remove();
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
